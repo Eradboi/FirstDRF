@@ -3,7 +3,7 @@ import json
 # Create your views here.
 from django.http import JsonResponse,HttpResponse
 from django.forms.models import model_to_dict
-from products.models import Products
+from products.models import Product
 
 # using drf
 from rest_framework.response import Response
@@ -27,7 +27,7 @@ def api_home(request, *args,**kwargs):
     data['params'] = dict(request.GET)
     data['headers'] = dict(request.headers)
     data['content_type'] = request.content_type"""
-    instance = Products.objects.all().order_by('?').first()
+    instance = Product.objects.all().order_by('?').first()
     data = {}
     if instance:
         """
@@ -54,4 +54,5 @@ def api_home(request, *args,**kwargs):
 
 
 def home(request):
-    return HttpResponse('<h1>WELCOME EJE MI</h1>')
+    products = Product.objects.all()
+    return render(request,'api/home.html',{'products':products})

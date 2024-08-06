@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+{% block content %}
+<body>
+    <div style="padding: 10px; margin: auto; width: 90%;">
+        <div>
+            {% for product in products %}
+            <div>
+                <h2>NAME: {{ product.title }}</h2>
+            </div>
+            <div>
+                <h4>INFO</h4>
+                <h5>{{ product.about }}</h5>
+            </div>
+            <div style="display: flex; gap: 20%; background-color: antiquewhite; border-radius: 10px;">
+                <div><h5>Initial Price: {{ product.price }}</h5></div>
+                <div><h5>Discounted price{{ product.sale_price }}</h5></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+{% endblock %}
+</html>
