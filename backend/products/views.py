@@ -12,7 +12,8 @@ from rest_framework.decorators import api_view
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-
+# to change the keywork for the headers
+from api.authentication import TokenAuthentication
 class ProductDetailAPIView(generics.RetrieveAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
@@ -69,9 +70,10 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     # we can add a permissions class
     # Ther are several authentication classes
-    permission_classes = [IsStaffEditorPermission]
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
     # We can add an authentication class
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [authentication.SessionAuthentication,
+                              TokenAuthentication]
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
         about = serializer.validated_data.get('about') or None
