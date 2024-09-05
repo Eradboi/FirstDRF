@@ -3,9 +3,9 @@ from django.shortcuts import render
 # Create your views here.
 # WE started with generic api views
 
-from rest_framework import authentication,generics, mixins, permissions
+from rest_framework import generics, mixins
 from .models import Product
-from .permissions import IsStaffEditorPermission
+from api.mixins import StaffEditorPermissionMixin
 from .serializers import ProductSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -14,13 +14,17 @@ from django.shortcuts import get_object_or_404
 
 # to change the keywork for the headers
 from api.authentication import TokenAuthentication
-class ProductDetailAPIView(generics.RetrieveAPIView):
+class ProductDetailAPIView(
+    StaffEditorPermissionMixin,
+    generics.RetrieveAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 #A create api view
-class ProductCreateAPIView(generics.CreateAPIView):
+class ProductCreateAPIView(
+    StaffEditorPermissionMixin,
+    generics.CreateAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -35,7 +39,9 @@ class ProductCreateAPIView(generics.CreateAPIView):
 
 
 # We will now be doing the update and delete views
-class ProductUpdateAPIView(generics.UpdateAPIView):
+class ProductUpdateAPIView(
+    StaffEditorPermissionMixin,
+    generics.UpdateAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -47,7 +53,9 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
             instance.about = "Newest Shipping"
             serializer.save()
 
-class ProductDeleteAPIView(generics.DestroyAPIView):
+class ProductDeleteAPIView(
+    StaffEditorPermissionMixin,
+    generics.DestroyAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -64,16 +72,18 @@ class ProductDeleteAPIView(generics.DestroyAPIView):
 
 
 # to list and create
-class ProductListCreateAPIView(generics.ListCreateAPIView):
+class ProductListCreateAPIView(
+    StaffEditorPermissionMixin,
+    generics.ListCreateAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     # we can add a permissions class
     # Ther are several authentication classes
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    
     # We can add an authentication class
-    authentication_classes = [authentication.SessionAuthentication,
-                              TokenAuthentication]
+    #auth classes might be necessary if it is covered for 
+    #authentication_classes = [authentication.SessionAuthentication,TokenAuthentication]
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
         about = serializer.validated_data.get('about') or None
