@@ -41,7 +41,7 @@ class ProductCreateAPIView(
 # We will now be doing the update and delete views
 class ProductUpdateAPIView(
     StaffEditorPermissionMixin,
-    generics.UpdateAPIView):
+    generics.UpdateAPIView, generics.RetrieveUpdateAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -85,12 +85,18 @@ class ProductListCreateAPIView(
     #auth classes might be necessary if it is covered for 
     #authentication_classes = [authentication.SessionAuthentication,TokenAuthentication]
     def perform_create(self, serializer):
+        """
+        email = serializer.validated_data.pop('email')
+        print(email)"""
         title = serializer.validated_data.get('title')
         about = serializer.validated_data.get('about') or None
-        print(title,about)
         if about is None:
             about = 'No description given'
         serializer.save(about=about)
+
+class ProductPatchAPIView(generics.RetrieveUpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
 
 
 
