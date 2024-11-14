@@ -4,16 +4,17 @@ from django.shortcuts import render
 # WE started with generic api views
 
 from rest_framework import generics, mixins
-from .models import Product
-from api.mixins import StaffEditorPermissionMixin
+from .models import Product,User
+from api.mixins import (StaffEditorPermissionMixin,UserQuerySetMixin,)
 from .serializers import ProductSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.http import Http404
+from django.http import Http404,HttpResponse
 from django.shortcuts import get_object_or_404
-
+from django.contrib.auth import get_user_model
 # to change the keywork for the headers
 from api.authentication import TokenAuthentication
+
 class ProductDetailAPIView(
     StaffEditorPermissionMixin,
     generics.RetrieveAPIView):
@@ -74,10 +75,12 @@ class ProductDeleteAPIView(
 # to list and create
 class ProductListCreateAPIView(
     StaffEditorPermissionMixin,
+    UserQuerySetMixin,
     generics.ListCreateAPIView):
     # somehow like class based views
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    allow_staff_view = False
     # we can add a permissions class
     # Ther are several authentication classes
     
@@ -86,17 +89,26 @@ class ProductListCreateAPIView(
     #authentication_classes = [authentication.SessionAuthentication,TokenAuthentication]
     def perform_create(self, serializer):
         """
-        email = serializer.validated_data.pop('email')
+        email = serializer.validated_data.pop('email') 
         print(email)"""
         title = serializer.validated_data.get('title')
         about = serializer.validated_data.get('about') or None
         if about is None:
             about = 'No description given'
-        serializer.save(about=about)
-
+        serializer.save(user=self.request.user, about=about)
+    # day 12
+    """def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        request = self.request
+        #print(request.user)
+        return qs.filter(user=request.user)"""
 class ProductPatchAPIView(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+def users(request):
+    User = get_user_model()
+    return HttpResponse(User.objects.all())
 
 
 

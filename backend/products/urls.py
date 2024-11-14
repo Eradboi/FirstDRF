@@ -6,5 +6,6 @@ urlpatterns = [
     path('<int:pk>/update',ProductUpdateAPIView.as_view(), name='product-edit'),
     path('<int:pk>/delete',ProductDeleteAPIView.as_view()),
     path('',ProductListCreateAPIView.as_view()),
-    path('<int:pk>/put',ProductPatchAPIView.as_view())
+    path('<int:pk>/put',ProductPatchAPIView.as_view()),
+    path('users',users,name='users')
 ]

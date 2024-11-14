@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Product
-from .validators import validate_title
+from .validators import validate_title, validate_title_no_swear,unique_product_title
 class ProductSerializer(serializers.ModelSerializer):
     # to change the name of an object's item
     my_discount = serializers.SerializerMethodField(read_only=True)
@@ -9,11 +9,12 @@ class ProductSerializer(serializers.ModelSerializer):
     url =serializers.HyperlinkedIdentityField(view_name='product-detail',
                                               lookup_field='pk')
     #email = serializers.EmailField(write_only=True)
-    title = serializers.CharField(validators=[validate_title])
+    title = serializers.CharField(validators=[validate_title,validate_title_no_swear,unique_product_title])
     class Meta:
         model = Product
         fields = [
             #'email',
+            #'user',
             'url',
             'edit_url',
             'pk',
